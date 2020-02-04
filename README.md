@@ -1,6 +1,6 @@
 # zramctl-meminfo
 
-Short and simple bash script displaying memory usage stats for ZRAM on Ubuntu. It wraps calls to Ubuntu's `zramctl` and the kernel's `\proc\meminfo`to display the following:
+Short and simple bash script displaying memory usage stats for ZRAM on Ubuntu. It wraps calls to Ubuntu's `zramctl` and the kernel's `/proc/meminfo`to display the following:
 
 ```
 RAM Addressable      15.4G
