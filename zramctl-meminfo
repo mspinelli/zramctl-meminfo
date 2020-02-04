@@ -1,0 +1,22 @@
+#!/bin/bash
+
+format() { 
+  numfmt --to=iec --format %.1f 
+}
+
+read ZUNCOMPR ZRAMUSED < <(zramctl --raw -n -b -o 'DATA,TOTAL' | awk '{d+=$1; t+=$2;}END{print d, t}')
+RATIO=$(echo $ZUNCOMPR/$ZRAMUSED | bc -l)
+MEMTOTAL=$(awk '/MemTotal/{print $2}' < /proc/meminfo)
+MEMAVAIL=$(awk '/MemAvailable/{print $2}' < /proc/meminfo)
+MEMUSED=$(echo "(($MEMTOTAL-$MEMAVAIL))*1024" | bc -l)
+UNCOMPR=$(echo $MEMUSED-$ZRAMUSED | bc -l)
+EFFECT=$(echo $UNCOMPR+$ZUNCOMPR | bc -l)
+
+printf "RAM Addressable    %7s\n" $(echo ${MEMTOTAL}K | numfmt --from=iec --to=iec --format %.1f)
+printf "    Used           %7s\n" $(echo $MEMUSED | format)
+printf "    Not Compressed %7s\n" $(echo $UNCOMPR | format)
+printf "    Compressed     %7s\n" $(echo $ZRAMUSED | format)
+printf "    Uncompressed   %7s\n\n" $(echo $ZUNCOMPR | format)
+printf "Effective RAM Used %7s\n" $(echo $EFFECT | format)
+printf "Compression Ratio  %7.1f\n" $RATIO
+
